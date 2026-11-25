@@ -36,7 +36,8 @@ def render(session_state, db_manager):
 
     st.success(f"Generated schedule contains **{len(entries)} scheduled course sessions**.")
 
-    tab_grid, tab_faculty, tab_room, tab_export = st.tabs([
+    tab_3d, tab_grid, tab_faculty, tab_room, tab_export = st.tabs([
+        "🧊 3D Timetable",
         "🗓️ Weekly Master Grid", 
         "👨‍🏫 Faculty View", 
         "🏛️ Room Allocation View", 
@@ -46,6 +47,14 @@ def render(session_state, db_manager):
     df = pd.DataFrame(entries)
     days_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
     time_order = ["8AM", "9AM", "10AM", "11AM", "12PM", "1PM", "2PM", "3PM", "4PM", "5PM"]
+
+    with tab_3d:
+        st.subheader("Interactive 3D Timetable")
+        theme.timetable_3d(
+            entries,
+            [d for d in days_order if d in set(df["day"])],
+            [t for t in time_order if t in set(df["time_slot"])],
+        )
 
     with tab_grid:
         st.subheader("Weekly Timetable Grid")

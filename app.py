@@ -72,55 +72,35 @@ def main():
     # Global 3D design system
     theme.inject_css()
 
-    # Sidebar Navigation
-    st.sidebar.html(
-        '<div class="brand"><div class="brand-logo">🎓</div>'
-        '<div><div class="brand-t">Timetable Compiler</div>'
-        '<div class="brand-s">Compiler Construction</div></div></div>'
+    # Top navigation (grouped)
+    def page(fn, title, icon, path, default=False):
+        return st.Page(fn, title=title, icon=icon, url_path=path, default=default)
+
+    ss = st.session_state
+    nav = st.navigation(
+        {
+            "Home": [
+                page(lambda: dashboard.render(ss, db_manager), "Dashboard", ":material/home:", "dashboard", True),
+            ],
+            "Setup": [
+                page(lambda: data_management.render(db_manager, ss), "University data", ":material/database:", "data"),
+                page(lambda: rule_editor.render(ss, db_manager), "Rule editor", ":material/edit_note:", "editor"),
+            ],
+            "Compiler phases": [
+                page(lambda: lexical_view.render(ss), "1. Lexical analysis", ":material/text_fields:", "lexical"),
+                page(lambda: syntax_view.render(ss), "2. Syntax analysis", ":material/account_tree:", "syntax"),
+                page(lambda: semantic_view.render(ss), "3. Semantic analysis", ":material/rule:", "semantic"),
+                page(lambda: ir_view.render(ss), "4. Intermediate code", ":material/data_object:", "ir"),
+                page(lambda: constraints_view.render(ss), "5. Constraints", ":material/tune:", "constraints"),
+            ],
+            "Output": [
+                page(lambda: timetable_view.render(ss, db_manager), "6. Timetable", ":material/calendar_month:", "timetable"),
+                page(lambda: error_view.render(ss), "7. Error reports", ":material/error:", "errors"),
+            ],
+        },
+        position="top",
     )
-
-    page = st.sidebar.radio(
-        "Navigation Menu",
-        [
-            "🏠 Dashboard",
-            "📊 University Data",
-            "✏️ Rule Editor",
-            "🔤 1. Lexical Analysis",
-            "🌳 2. Syntax Analysis",
-            "✅ 3. Semantic Analysis",
-            "📋 4. Intermediate Representation",
-            "⚙️ 5. Generated Constraints",
-            "📅 6. Generated Timetable",
-            "🚨 7. Compiler Error Reports",
-        ],
-        index=0,
-    )
-
-    st.sidebar.markdown("---")
-    st.sidebar.caption("Smart University Timetable Constraint Compiler v1.0.0")
-
-    # Route to pages
-    if page == "🏠 Dashboard":
-        dashboard.render(st.session_state, db_manager)
-    elif page == "📊 University Data":
-        data_management.render(db_manager, st.session_state)
-    elif page == "✏️ Rule Editor":
-        rule_editor.render(st.session_state, db_manager)
-    elif page == "🔤 1. Lexical Analysis":
-        lexical_view.render(st.session_state)
-    elif page == "🌳 2. Syntax Analysis":
-        syntax_view.render(st.session_state)
-    elif page == "✅ 3. Semantic Analysis":
-        semantic_view.render(st.session_state)
-    elif page == "📋 4. Intermediate Representation":
-        ir_view.render(st.session_state)
-    elif page == "⚙️ 5. Generated Constraints":
-        constraints_view.render(st.session_state)
-    elif page == "📅 6. Generated Timetable":
-        timetable_view.render(st.session_state, db_manager)
-    elif page == "🚨 7. Compiler Error Reports":
-        error_view.render(st.session_state)
-
+    nav.run()
 
 if __name__ == "__main__":
     main()

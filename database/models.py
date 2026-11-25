@@ -148,6 +148,7 @@ class DatabaseManager:
 
     def __init__(self, db_path: str = "timetable.db") -> None:
         self.db_path = db_path
+        self._shared_conn = None
         self._store = {
             "teachers": [],
             "courses": [],
@@ -161,6 +162,11 @@ class DatabaseManager:
     def get_connection(self):
         if SQLITE_AVAILABLE and self.db_path != ":memory_fallback:":
             try:
+                if self.db_path == ":memory:":
+                    if self._shared_conn is None:
+                        self._shared_conn = sqlite3.connect(":memory:")
+                        self._shared_conn.row_factory = sqlite3.Row
+                    return self._shared_conn
                 conn = sqlite3.connect(self.db_path)
                 conn.row_factory = sqlite3.Row
                 return conn
@@ -169,9 +175,9 @@ class DatabaseManager:
         return _FallbackConnection(self)
 
     def initialize_db(self) -> None:
-        if SQLITE_AVAILABLE:
+        if SQLITE_AVAILABLE and self.db_path != ":memory_fallback:":
             try:
-                with sqlite3.connect(self.db_path) as conn:
+                with self.get_connection() as conn:
                     cur = conn.cursor()
                     cur.execute("CREATE TABLE IF NOT EXISTS teachers (id INTEGER PRIMARY KEY, teacher_id TEXT, name TEXT UNIQUE, email TEXT, department TEXT);")
                     cur.execute("CREATE TABLE IF NOT EXISTS rooms (id INTEGER PRIMARY KEY, room_id TEXT UNIQUE, name TEXT, room_name TEXT, capacity INTEGER, room_type TEXT);")

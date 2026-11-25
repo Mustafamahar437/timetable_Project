@@ -25,12 +25,16 @@ def render(session_state, db_manager):
         tag="Compiler Construction · Semester Project",
     )
 
-    theme.stat_cards([
-        ("👩‍🏫", "Faculty", len(db_manager.get_teachers()), "#7c5cff", "#4f2fe0"),
-        ("📚", "Courses", len(db_manager.get_courses()), "#22d3ee", "#0e7490"),
-        ("🏛️", "Rooms & labs", len(db_manager.get_rooms()), "#f472b6", "#be185d"),
-        ("👥", "Student groups", len(db_manager.get_student_groups()), "#34d399", "#047857"),
-    ])
+    left, right = st.columns([3, 1.4], gap="medium")
+    with left:
+        theme.hero_3d()
+    with right:
+        theme.stat_cards([
+            ("", "Faculty", len(db_manager.get_teachers())),
+            ("", "Courses", len(db_manager.get_courses())),
+            ("", "Rooms and labs", len(db_manager.get_rooms())),
+            ("", "Student groups", len(db_manager.get_student_groups())),
+        ])
 
     st.subheader("Live compiler pipeline")
     sem = session_state.get("semantic_result")

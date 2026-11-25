@@ -17,3 +17,6 @@ env/
 
 # Local SQLite runtime database
 timetable.db
+
+# Testing
+.pytest_cache/

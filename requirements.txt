@@ -1,6 +1,6 @@
 lark>=1.1.9
 ortools>=9.9.3963
-streamlit>=1.35.0
+streamlit>=1.50.0
 pandas>=2.2.0
 fpdf2>=2.7.9
 plotly>=5.22.0
