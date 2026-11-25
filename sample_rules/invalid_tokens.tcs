@@ -1,0 +1,18 @@
+// =============================================================================
+// Lexical Errors Dataset: Invalid tokens, unknown characters, bad formats
+// =============================================================================
+
+// 1. Invalid special character '@' inside identifier
+RULE CS101 ROOM @Lab1;
+
+// 2. Invalid character '#' in day specification
+RULE Ahmed NOT_AVAILABLE Mon# 9AM;
+
+// 3. Invalid dollar sign character
+RULE $CS101 TEACHER Ahmed;
+
+// 4. Invalid time format with lowercase and dot
+RULE CS101 PREFERRED_TIME 9.30am;
+
+// 5. Invalid symbol inside rule
+RULE CS101 & CR1;

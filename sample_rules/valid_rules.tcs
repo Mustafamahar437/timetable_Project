@@ -1,0 +1,53 @@
+// =============================================================================
+// Valid Rules Dataset: Smart University Timetable Constraint Script (.tcs)
+// =============================================================================
+
+// Global Clash-Free Invariants
+RULE NO_ROOM_CLASH;
+RULE NO_TEACHER_CLASH;
+
+// Faculty Availability Constraints
+RULE Ahmed NOT_AVAILABLE Monday 9AM;
+RULE Ahmed NOT_AVAILABLE Friday 2PM;
+RULE Sara NOT_AVAILABLE Wednesday 10AM;
+RULE Bilal NOT_AVAILABLE Tuesday 8AM;
+
+// Course Room Assignments
+RULE CS101 ROOM CR1;
+RULE CS201 ROOM CR2;
+RULE CS301 ROOM CR1;
+RULE CS401 ROOM Lab1;
+RULE CS501 ROOM CR3;
+RULE CS601 ROOM Lab2;
+RULE MATH101 ROOM LH1;
+
+// Course Teacher Assignments
+RULE CS101 TEACHER Ahmed;
+RULE CS201 TEACHER Ahmed;
+RULE CS301 TEACHER Sara;
+RULE CS401 TEACHER Sara;
+RULE CS501 TEACHER Bilal;
+RULE CS601 TEACHER Bilal;
+RULE MATH101 TEACHER Ayesha;
+
+// Course Session Duration and Frequency Requirements
+RULE CS101 DURATION 1HOUR;
+RULE CS101 DAYS_PER_WEEK 3;
+RULE CS201 DURATION 1HOUR;
+RULE CS201 DAYS_PER_WEEK 3;
+RULE CS301 DURATION 1HOUR;
+RULE CS301 DAYS_PER_WEEK 2;
+RULE CS401 DURATION 1HOUR;
+RULE CS401 DAYS_PER_WEEK 2;
+
+// Enrolment & Capacity Rules
+RULE CS101 STUDENTS 40;
+RULE CS201 STUDENTS 40;
+RULE CR1 CAPACITY 50;
+RULE CR2 CAPACITY 50;
+RULE Lab1 CAPACITY 45;
+
+// Optimization / Soft Preferences
+RULE CS101 PREFERRED_TIME 9AM;
+RULE CS201 PREFERRED_TIME 10AM;
+RULE CS301 PREFERRED_DAY Monday;

@@ -1,0 +1,20 @@
+// =============================================================================
+// Semantic Errors Dataset: Valid syntax, but references non-existent entities or conflicts
+// =============================================================================
+
+// 1. Non-existent Faculty member
+RULE Dr_UnknownProfessor NOT_AVAILABLE Monday 9AM;
+
+// 2. Non-existent Course ID
+RULE CS999 ROOM CR1;
+
+// 3. Non-existent Room ID
+RULE CS101 ROOM ImaginaryAuditorium;
+
+// 4. Room capacity smaller than course enrolled students (Capacity overflow)
+RULE CS101 ROOM Sem1;
+RULE CS101 STUDENTS 50;
+RULE Sem1 CAPACITY 30;
+
+// 5. Invalid duration exceeds maximum permitted hours (1-3)
+RULE CS101 DURATION 5HOUR;

@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Streamlit credentials / local state
+.streamlit/credentials.toml
+
+# Local SQLite runtime database
+timetable.db

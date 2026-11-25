@@ -1,0 +1,18 @@
+// =============================================================================
+// Syntax Errors Dataset: Missing semicolons, malformed structures, missing arguments
+// =============================================================================
+
+// 1. Missing terminating semicolon
+RULE NO_ROOM_CLASH
+
+// 2. Missing target argument for ROOM keyword
+RULE CS101 ROOM;
+
+// 3. Inverted keyword ordering (invalid grammar production)
+RULE TEACHER Ahmed CS101;
+
+// 4. Missing RULE prefix keyword
+CS101 DURATION 1HOUR;
+
+// 5. Extra tokens trailing statement
+RULE CR1 CAPACITY 50 EXTRA_GARBAGE;
