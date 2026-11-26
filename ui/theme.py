@@ -29,7 +29,7 @@ html, body, [class*="css"], .stApp{ font-family:'Outfit',system-ui,sans-serif; c
 .stApp{ background:
   radial-gradient(ellipse at 50% 0%, rgba(45,212,191,.10), transparent 55%),
   radial-gradient(ellipse at 100% 100%, rgba(139,92,246,.08), transparent 50%), var(--bg); }
-.block-container{ padding-top:1rem; max-width:1240px; }
+.block-container{ padding:5rem 1rem 2rem; max-width:100%; } /* full screen width, clear of the top menu bar */
 h1,h2,h3,h4{ font-family:'Outfit',sans-serif; font-weight:600; color:var(--fg); }
 header[data-testid="stHeader"]{ background:rgba(9,11,15,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
 
