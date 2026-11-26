@@ -29,7 +29,11 @@ html, body, [class*="css"], .stApp{ font-family:'Outfit',system-ui,sans-serif; c
 .stApp{ background:
   radial-gradient(ellipse at 50% 0%, rgba(45,212,191,.10), transparent 55%),
   radial-gradient(ellipse at 100% 100%, rgba(139,92,246,.08), transparent 50%), var(--bg); }
-.block-container{ padding:5rem 1rem 2rem; max-width:100%; } /* full screen width, clear of the top menu bar */
+/* full screen width, clear of the top menu bar (!important beats Streamlit's own rules) */
+.stApp [data-testid="stMainBlockContainer"], .stApp .block-container{ padding:4.5rem 1rem 2rem !important; max-width:100% !important; }
+/* the 3D phase map always fits the visible screen */
+.st-key-phasemap iframe{ height:calc(100vh - 6rem) !important; height:calc(100dvh - 6rem) !important; min-height:380px; }
+.st-key-phasemap [data-testid="stElementContainer"]{ height:auto !important; }
 h1,h2,h3,h4{ font-family:'Outfit',sans-serif; font-weight:600; color:var(--fg); }
 header[data-testid="stHeader"]{ background:rgba(9,11,15,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
 
@@ -238,10 +242,10 @@ const panel=document.getElementById('panel'),steps=document.getElementById('step
 const done=PH.filter(p=>p.st==='ok').length,bad=PH.filter(p=>p.st==='bad').length;
 sum.textContent=bad?bad+' failed':done+' / '+N+' phases passed';
 PH.forEach((p,i)=>{const b=document.createElement('button');b.textContent=i+1;b.style.background=p.c;b.title=p.n;b.onclick=()=>pick(i);p.btn=b;steps.appendChild(b);if(i<N-1){const u=document.createElement('u');steps.appendChild(u)}});
-let sel=-1,tx=0,ty=0,tz=17.5,cx=0,cy=0,cz=17.5,rx=.12,ry=-.08,trx=.12,tryy=-.08,drag=false,moved=0,lx=0,ly=0,mx=0,my=0;
+let sel=-1,tx=0,ty=0,tz=17.5,base=17.5,cx=0,cy=0,cz=17.5,rx=.12,ry=-.08,trx=.12,tryy=-.08,drag=false,moved=0,lx=0,ly=0,mx=0,my=0;
 function pick(i){const old=sel;sel=i;if(old>=0){PH[old].ts=1;draw(old,false)}
- if(i<0){panel.classList.add('off');tx=ty=0;tz=17.5;nm.textContent='';steps.querySelectorAll('button').forEach(b=>b.classList.remove('on'));app.style.setProperty('--ph','#2dd4bf');return}
- const p=PH[i];p.ts=1.08;draw(i,true);app.style.setProperty('--ph',p.pc);tx=p.x*.55;ty=p.y*.5;tz=14.5;nm.textContent=p.n;
+ if(i<0){panel.classList.add('off');tx=ty=0;tz=base;nm.textContent='';steps.querySelectorAll('button').forEach(b=>b.classList.remove('on'));app.style.setProperty('--ph','#2dd4bf');return}
+ const p=PH[i];p.ts=1.08;draw(i,true);app.style.setProperty('--ph',p.pc);tx=p.x*.55;ty=p.y*.5;tz=base*.84;nm.textContent=p.n;
  steps.querySelectorAll('button').forEach((b,k)=>b.classList.toggle('on',k===i));
  const lab={ok:'Passed',bad:'Failed',idle:'Not run'}[p.st];
  panel.innerHTML='<button class="x" id="cl">\u2715</button><div class="lab">Phase '+(i+1)+' of '+N+'</div><h2>'+p.n+'</h2><div class="sub">'+p.s+'</div><span class="badge b-'+p.st+'">'+lab+'</span><p>'+p.d+'</p><h4>Key points</h4><ul>'+p.k.map(k=>'<li>'+k+'</li>').join('')+'</ul>';
@@ -253,8 +257,8 @@ addEventListener('pointerup',e=>{if(drag&&moved<5){const r=cv.getBoundingClientR
 addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();mx=e.clientX;my=e.clientY;
  if(drag){moved+=Math.abs(e.clientX-lx)+Math.abs(e.clientY-ly);tryy=Math.max(-.5,Math.min(.5,tryy+(e.clientX-lx)*.004));trx=Math.max(-.35,Math.min(.45,trx+(e.clientY-ly)*.003));lx=e.clientX;ly=e.clientY}
  else{v.set(((mx-r.left)/r.width)*2-1,-((my-r.top)/r.height)*2+1);ray.setFromCamera(v,C);const h=ray.intersectObjects(PH.map(p=>p.mesh))[0];cv.style.cursor=h?'pointer':'grab';PH.forEach((p,i)=>{p.hv=h&&h.object.userData.i===i})}});
-cv.addEventListener('wheel',e=>{e.preventDefault();tz=Math.max(9,Math.min(28,tz+e.deltaY*.02))},{passive:false});
-function fit(){const w=app.clientWidth,h=app.clientHeight;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix()}addEventListener('resize',fit);fit();
+cv.addEventListener('wheel',e=>{e.preventDefault();tz=Math.max(9,Math.min(45,tz+e.deltaY*.02))},{passive:false});
+function fit(){const w=app.clientWidth,h=app.clientHeight;R.setSize(w,h,false);C.aspect=w/h;C.updateProjectionMatrix();base=Math.max(13.5,22/(.933*C.aspect));if(sel<0)tz=base}addEventListener('resize',fit);fit();cz=tz;
 // path length for packet
 const lens=curves.map(c=>c.getLength()),tot=lens.reduce((a,b)=>a+b,0);
 function at(u){let d=u*tot;for(let i=0;i<curves.length;i++){if(d<=lens[i])return curves[i].getPoint(d/lens[i]);d-=lens[i]}return curves[curves.length-1].getPoint(1)}
@@ -488,7 +492,8 @@ def pipeline_scene(phases: list[dict], height: int = 760) -> None:
     import json
     page = (_PIPE_HTML.replace("__THREE__", _THREE)
             .replace("__DATA__", json.dumps(phases).replace("</", "<\\/")))
-    st.iframe(page, height=height, alt="Interactive 3D map of the compiler phases")
+    with st.container(key="phasemap"):
+        st.iframe(page, height=height, alt="Interactive 3D map of the compiler phases")
 
 
 def hero_3d(height: int = 470) -> None:
